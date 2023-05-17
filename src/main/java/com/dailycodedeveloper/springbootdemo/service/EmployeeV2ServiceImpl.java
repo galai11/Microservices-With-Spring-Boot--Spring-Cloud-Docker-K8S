@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeV2ServiceImpl implements EmployeeService {
@@ -27,18 +28,31 @@ public class EmployeeV2ServiceImpl implements EmployeeService {
         return employee;
     }
 
+    //CONVERT ALL EMPLOYEE-ENTITY TO EMPLOYEE TO RETURN LIST OF EMPLOYEES
     @Override
     public List<Employee> getAllEmployees() {
-        return null;
+        List<EmployeeEntity> employeeEntities = employeeRepository.findAll();
+        List<Employee> employees = employeeEntities.stream().map(employeeEntity -> {
+            Employee employee = new Employee();
+            BeanUtils.copyProperties(employeeEntity,employee);
+            return employee;
+        })
+                .collect(Collectors.toList());
+        return employees;
     }
 
     @Override
     public Employee getEmployeeById(String id) {
-        return null;
+        EmployeeEntity employeeEntity = employeeRepository.findById(id).get();
+        Employee employee = new Employee();
+
+        BeanUtils.copyProperties(employeeEntity,employee);
+        return employee;
     }
 
     @Override
     public String deleteEmployeeById(String id) {
-        return null;
+        employeeRepository.deleteById(id);
+        return "employee deleted with the id : " + id ;
     }
 }
